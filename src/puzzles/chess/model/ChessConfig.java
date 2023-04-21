@@ -65,7 +65,7 @@ public class ChessConfig implements Configuration {
     private ChessConfig(ChessConfig other) {
         this.grid = new char[rowDIM][columnDIM];
         for (int r = 0; r < rowDIM; r++) {
-            System.arraycopy(other.grid[r], 0, this.grid[r], 0, rowDIM);
+            System.arraycopy(other.grid[r], 0, this.grid[r], 0, columnDIM);
         }
     }
 
@@ -151,6 +151,59 @@ public class ChessConfig implements Configuration {
                         successors.add(NEPawn);
                     }
                 }
+                if (cell.equals(QUEEN)) {
+                    ChessConfig QueenUp = VerticalUp(r, c, ROOK);
+                    if (QueenUp != null) {
+                        successors.add(QueenUp);
+                    }
+                    ChessConfig QueenDown = VerticalDown(r, c, ROOK);
+                    if (QueenDown != null) {
+                        successors.add(QueenDown);
+                    }
+                    ChessConfig QueenLeft = HorizontalLeft(r, c, ROOK);
+                    if (QueenLeft != null) {
+                        successors.add(QueenLeft);
+                    }
+                    ChessConfig QueenRight = HorizontalRight(r, c, ROOK);
+                    if (QueenRight != null) {
+                        successors.add(QueenRight);
+                    }
+
+                }
+                if (cell.equals(KING)) {
+                    ChessConfig KingSW = SW1(r, c, KING);
+                    if (KingSW != null) {
+                        successors.add(KingSW);
+                    }
+                    ChessConfig KingSE = SE1(r, c, KING);
+                    if (KingSE != null) {
+                        successors.add(KingSE);
+                    }
+                    ChessConfig KingNW = NW1(r, c, KING);
+                    if (KingNW != null) {
+                        successors.add(KingNW);
+                    }
+                    ChessConfig KingNE = NE1(r, c, KING);
+                    if (KingNE != null) {
+                        successors.add(KingNE);
+                    }
+                    ChessConfig KingE = E1(r, c, KING);
+                    if (KingE != null) {
+                        successors.add(KingE);
+                    }
+                    ChessConfig KingW = W1(r, c, KING);
+                    if (KingW != null) {
+                        successors.add(KingW);
+                    }
+                    ChessConfig KingS = S1(r, c, KING);
+                    if (KingS != null) {
+                        successors.add(KingS);
+                    }
+                    ChessConfig KingN = N1(r, c, KING);
+                    if (KingN != null) {
+                        successors.add(KingN);
+                    }
+                }
             }
         }
         return successors;
@@ -203,7 +256,7 @@ public class ChessConfig implements Configuration {
 
     private ChessConfig HorizontalRight(int r, int c, char piece) {
         int moveCol = c;
-        while (moveCol + 1 < rowDIM) {
+        while (moveCol + 1 < columnDIM) {
             moveCol += 1;
             Character cell = getCell(r, moveCol);
             if (cellCheck(cell)) {
@@ -219,7 +272,7 @@ public class ChessConfig implements Configuration {
     private ChessConfig NE(int r, int c, char piece) {
         int moveRow = r;
         int moveCol = c;
-        while (moveRow - 1 <= 0 & moveCol + 1 < columnDIM) {
+        while (moveRow - 1 > 0 & moveCol + 1 < columnDIM) {
             moveRow -= 1;
             moveCol += 1;
             Character cell = getCell(moveRow, moveCol);
@@ -341,19 +394,19 @@ public class ChessConfig implements Configuration {
             }
         }
         if (r + 1 < rowDIM & c + 2 < columnDIM) {
-            Character cell = getCell(r + 2, c - 1);
-            if (cellCheck(cell)) {
-                ChessConfig config = new ChessConfig(this);
-                config.grid[r + 2][c - 1] = piece;
-                config.grid[r][c] = EMPTY;
-                HorsieList.add(config);
-            }
-        }
-        if (r + 1 < rowDIM & c + 2 < columnDIM) {
             Character cell = getCell(r + 1, c + 2);
             if (cellCheck(cell)) {
                 ChessConfig config = new ChessConfig(this);
                 config.grid[r + 1][c + 2] = piece;
+                config.grid[r][c] = EMPTY;
+                HorsieList.add(config);
+            }
+        }
+        if (r + 2 < rowDIM & c + 1 < columnDIM) {
+            Character cell = getCell(r + 2, c + 1);
+            if (cellCheck(cell)) {
+                ChessConfig config = new ChessConfig(this);
+                config.grid[r + 2][c + 1] = piece;
                 config.grid[r][c] = EMPTY;
                 HorsieList.add(config);
             }
@@ -386,6 +439,83 @@ public class ChessConfig implements Configuration {
         }
         return null;
     }
+    private ChessConfig SW1(int r, int c, Character piece) {
+        if (r + 1 < rowDIM & c - 1 >= 0) {
+            Character cell = getCell(r + 1, c - 1);
+            if (cellCheck(cell)) {
+                ChessConfig config = new ChessConfig(this);
+                config.grid[r + 1][c - 1] = piece;
+                config.grid[r][c] = EMPTY;
+                return config;
+            }
+        }
+        return null;
+    }
+
+    private ChessConfig SE1(int r, int c, Character piece) {
+        if (r + 1 < rowDIM & c + 1 < columnDIM) {
+            Character cell = getCell(r + 1, c + 1);
+            if (cellCheck(cell)) {
+                ChessConfig config = new ChessConfig(this);
+                config.grid[r + 1][c + 1] = piece;
+                config.grid[r][c] = EMPTY;
+                return config;
+            }
+        }
+        return null;
+    }
+
+    private ChessConfig N1(int r, int c, Character piece) {
+        if (r - 1 > 0) {
+            Character cell = getCell(r - 1, c);
+            if (cellCheck(cell)) {
+                ChessConfig config = new ChessConfig(this);
+                config.grid[r - 1][c] = piece;
+                config.grid[r][c] = EMPTY;
+                return config;
+            }
+        }
+        return null;
+    }
+    private ChessConfig S1(int r, int c, Character piece) {
+        if (r + 1 < rowDIM) {
+            Character cell = getCell(r + 1, c);
+            if (cellCheck(cell)) {
+                ChessConfig config = new ChessConfig(this);
+                config.grid[r + 1][c] = piece;
+                config.grid[r][c] = EMPTY;
+                return config;
+            }
+        }
+        return null;
+    }
+
+    private ChessConfig W1(int r, int c, Character piece) {
+        if (c - 1 > 0) {
+            Character cell = getCell(r, c - 1);
+            if (cellCheck(cell)) {
+                ChessConfig config = new ChessConfig(this);
+                config.grid[r][c -1] = piece;
+                config.grid[r][c] = EMPTY;
+                return config;
+            }
+        }
+        return null;
+    }
+    private ChessConfig E1(int r, int c, Character piece) {
+        if (c + 1 < columnDIM) {
+            Character cell = getCell(r, c + 1);
+            if (cellCheck(cell)) {
+                ChessConfig config = new ChessConfig(this);
+                config.grid[r][c + 1] = piece;
+                config.grid[r][c] = EMPTY;
+                return config;
+            }
+        }
+        return null;
+    }
+
+
 
     private boolean cellCheck(Character cell) {
         return (cell.equals(BISHOP) || cell.equals(KING) || cell.equals(KNIGHT) ||
