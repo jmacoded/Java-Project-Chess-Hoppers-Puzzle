@@ -92,6 +92,9 @@ public class ChessConfig implements Configuration {
     public Collection<Configuration> getNeighbors() {
         // different possible moves
         LinkedList<Configuration> successors = new LinkedList<>();
+        if (isValid(this.grid)){
+
+        }
         for (int r = 0; r < rowDIM; r++) {
             for (int c = 0; c < columnDIM; c++) {
                 Character cell = getCell(r, c);
@@ -207,6 +210,11 @@ public class ChessConfig implements Configuration {
             }
         }
         return successors;
+    }
+
+    private boolean isValid(char[][] grid){
+
+        return false;
     }
 
     private ChessConfig VerticalUp(int r, int c, char piece) {
@@ -540,7 +548,7 @@ public class ChessConfig implements Configuration {
     public boolean equals(Object other) {
         if (other instanceof Configuration) {
             ChessConfig otherconfig = (ChessConfig) other;
-            if (otherconfig.grid == this.grid){
+            if (Arrays.deepEquals(otherconfig.grid, this.grid)){
                 return true;
             } else {
                 return false;
