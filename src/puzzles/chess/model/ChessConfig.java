@@ -155,21 +155,37 @@ public class ChessConfig implements Configuration {
                     }
                 }
                 if (cell.equals(QUEEN)) {
-                    ChessConfig QueenUp = VerticalUp(r, c, ROOK);
+                    ChessConfig QueenUp = VerticalUp(r, c, QUEEN);
                     if (QueenUp != null) {
                         successors.add(QueenUp);
                     }
-                    ChessConfig QueenDown = VerticalDown(r, c, ROOK);
+                    ChessConfig QueenDown = VerticalDown(r, c, QUEEN);
                     if (QueenDown != null) {
                         successors.add(QueenDown);
                     }
-                    ChessConfig QueenLeft = HorizontalLeft(r, c, ROOK);
+                    ChessConfig QueenLeft = HorizontalLeft(r, c, QUEEN);
                     if (QueenLeft != null) {
                         successors.add(QueenLeft);
                     }
-                    ChessConfig QueenRight = HorizontalRight(r, c, ROOK);
+                    ChessConfig QueenRight = HorizontalRight(r, c, QUEEN);
                     if (QueenRight != null) {
                         successors.add(QueenRight);
+                    }
+                    ChessConfig QueenNE = NE(r, c, QUEEN);
+                    if (QueenNE != null) {
+                        successors.add(QueenNE);
+                    }
+                    ChessConfig QueenNW = NW(r, c, QUEEN);
+                    if (QueenNW != null) {
+                        successors.add(QueenNW);
+                    }
+                    ChessConfig QueenSE = SE(r, c, QUEEN);
+                    if (QueenSE != null) {
+                        successors.add(QueenSE);
+                    }
+                    ChessConfig QueenSW = SW(r, c, QUEEN);
+                    if (QueenSW != null) {
+                        successors.add(QueenSW);
                     }
 
                 }
@@ -254,7 +270,7 @@ public class ChessConfig implements Configuration {
             Character cell = getCell(r, moveCol);
             if (cellCheck(cell)) {
                 ChessConfig config = new ChessConfig(this);
-                config.grid[moveCol][c] = piece;
+                config.grid[r][moveCol] = piece;
                 config.grid[r][c] = EMPTY;
                 return config;
             }
@@ -269,7 +285,7 @@ public class ChessConfig implements Configuration {
             Character cell = getCell(r, moveCol);
             if (cellCheck(cell)) {
                 ChessConfig config = new ChessConfig(this);
-                config.grid[moveCol][c] = piece;
+                config.grid[r][moveCol] = piece;
                 config.grid[r][c] = EMPTY;
                 return config;
             }
@@ -278,40 +294,6 @@ public class ChessConfig implements Configuration {
     }
 
     private ChessConfig NE(int r, int c, char piece) {
-        int moveRow = r;
-        int moveCol = c;
-        while (moveRow - 1 > 0 & moveCol + 1 < columnDIM) {
-            moveRow -= 1;
-            moveCol += 1;
-            Character cell = getCell(moveRow, moveCol);
-            if (cellCheck(cell)) {
-                ChessConfig config = new ChessConfig(this);
-                config.grid[moveRow][moveCol] = piece;
-                config.grid[r][c] = EMPTY;
-                return config;
-            }
-        }
-        return null;
-    }
-
-    private ChessConfig NW(int r, int c, char piece) {
-        int moveRow = r;
-        int moveCol = c;
-        while (moveRow + 1 < rowDIM & moveCol - 1 >= 0) {
-            moveRow += 1;
-            moveCol -= 1;
-            Character cell = getCell(moveRow, moveCol);
-            if (cellCheck(cell)) {
-                ChessConfig config = new ChessConfig(this);
-                config.grid[moveRow][moveCol] = piece;
-                config.grid[r][c] = EMPTY;
-                return config;
-            }
-        }
-        return null;
-    }
-
-    private ChessConfig SE(int r, int c, char piece) {
         int moveRow = r;
         int moveCol = c;
         while (moveRow - 1 >= 0 & moveCol + 1 < columnDIM) {
@@ -328,11 +310,45 @@ public class ChessConfig implements Configuration {
         return null;
     }
 
-    private ChessConfig SW(int r, int c, char piece) {
+    private ChessConfig NW(int r, int c, char piece) {
         int moveRow = r;
         int moveCol = c;
         while (moveRow - 1 >= 0 & moveCol - 1 >= 0) {
             moveRow -= 1;
+            moveCol -= 1;
+            Character cell = getCell(moveRow, moveCol);
+            if (cellCheck(cell)) {
+                ChessConfig config = new ChessConfig(this);
+                config.grid[moveRow][moveCol] = piece;
+                config.grid[r][c] = EMPTY;
+                return config;
+            }
+        }
+        return null;
+    }
+
+    private ChessConfig SE(int r, int c, char piece) {
+        int moveRow = r;
+        int moveCol = c;
+        while (moveRow + 1 < rowDIM & moveCol + 1 < columnDIM) {
+            moveRow += 1;
+            moveCol += 1;
+            Character cell = getCell(moveRow, moveCol);
+            if (cellCheck(cell)) {
+                ChessConfig config = new ChessConfig(this);
+                config.grid[moveRow][moveCol] = piece;
+                config.grid[r][c] = EMPTY;
+                return config;
+            }
+        }
+        return null;
+    }
+
+    private ChessConfig SW(int r, int c, char piece) {
+        int moveRow = r;
+        int moveCol = c;
+        while (moveRow + 1 < rowDIM & moveCol - 1 >= 0) {
+            moveRow += 1;
             moveCol -= 1;
             Character cell = getCell(moveRow, moveCol);
             if (cellCheck(cell)) {
@@ -474,7 +490,7 @@ public class ChessConfig implements Configuration {
     }
 
     private ChessConfig N1(int r, int c, Character piece) {
-        if (r - 1 > 0) {
+        if (r - 1 >= 0) {
             Character cell = getCell(r - 1, c);
             if (cellCheck(cell)) {
                 ChessConfig config = new ChessConfig(this);
@@ -499,7 +515,7 @@ public class ChessConfig implements Configuration {
     }
 
     private ChessConfig W1(int r, int c, Character piece) {
-        if (c - 1 > 0) {
+        if (c - 1 >= 0) {
             Character cell = getCell(r, c - 1);
             if (cellCheck(cell)) {
                 ChessConfig config = new ChessConfig(this);
