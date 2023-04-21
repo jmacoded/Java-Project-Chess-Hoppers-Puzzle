@@ -357,6 +357,7 @@ public class ChessConfig implements Configuration {
                 config.grid[r][c] = EMPTY;
                 return config;
             }
+
         }
         return null;
     }
