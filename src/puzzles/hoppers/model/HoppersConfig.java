@@ -1,10 +1,12 @@
 package puzzles.hoppers.model;
 
+import puzzles.chess.model.ChessConfig;
 import puzzles.common.solver.Configuration;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -168,5 +170,21 @@ public class HoppersConfig implements Configuration{
             string.append('\n');
         }
         return string.toString();
+    }
+
+    public int hashCode() {
+        return Arrays.deepHashCode(grid);
+    }
+
+    public boolean equals(Object other) {
+        if (other instanceof Configuration) {
+            HoppersConfig otherconfig = (HoppersConfig) other;
+            if (Arrays.deepEquals(otherconfig.grid, this.grid)){
+                return true;
+            } else {
+                return false;
+            }
+        }
+        return false;
     }
 }
