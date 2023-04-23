@@ -26,7 +26,7 @@ public class Hoppers {
                     int numOfSteps = 0;
                     for (Configuration element : shortList) {
                         System.out.println("Step " + numOfSteps + ":");
-                        System.out.println(element);
+                        System.out.println(element.toString());
                         numOfSteps += 1;
                     }
                 }
