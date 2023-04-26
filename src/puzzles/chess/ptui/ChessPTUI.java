@@ -9,6 +9,8 @@ import java.util.Scanner;
 public class ChessPTUI implements Observer<ChessModel, String> {
     private ChessModel model;
 
+    private String file;
+
     public void init(String filename) throws IOException {
         this.model = new ChessModel(filename);
         this.model.addObserver(this);
@@ -37,10 +39,31 @@ public class ChessPTUI implements Observer<ChessModel, String> {
             String line = in.nextLine();
             String[] words = line.split( "\\s+" );
             if (words.length > 0) {
-                if (words[0].startsWith( "q" )) {
+                if (words[0].startsWith("q")) {
                     break;
                 }
-                else {
+                else if (words[0].startsWith("s")) {
+                    if (model.validSelection(Integer.parseInt(words[1]), Integer.parseInt(words[2]))) {
+                        System.out.print( "> " );
+                        String line2 = in.nextLine();
+                        String[] words2 = line2.split("\\s+");
+                        if (words2[0].startsWith("s")) {
+                            model.enterMove(Integer.parseInt(words[1]), Integer.parseInt(words[2]), Integer.parseInt(words2[1]), Integer.parseInt(words2[2]));
+                        }
+                    }
+                }
+                else if (words[0].startsWith("r")) {
+                    model.reset();
+                }
+                else if (words[0].startsWith("h")){
+                    model.solving();
+                }
+
+                else if (words[0].startsWith("l")) {
+                    try {
+                        this.model = new ChessModel(words[1]);
+                    } catch (IOException e) {}
+                } else {
                     displayHelp();
                 }
             }
