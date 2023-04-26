@@ -5,15 +5,25 @@ import puzzles.hoppers.model.HoppersModel;
 import puzzles.chess.ptui.ChessPTUI;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Scanner;
 
 public class HoppersPTUI implements Observer<HoppersModel, String> {
     private HoppersModel model;
+    private boolean initialized;
+    private PrintWriter out;
 
     public void init(String filename) throws IOException {
+        this.initialized = false;
         this.model = new HoppersModel(filename);
         this.model.addObserver(this);
         displayHelp();
+    }
+
+    public void start( PrintWriter out ) {
+        this.out = out;
+        this.initialized = true;
+        // not sure if needed to put more in here
     }
 
     @Override
@@ -40,8 +50,15 @@ public class HoppersPTUI implements Observer<HoppersModel, String> {
             if (words.length > 0) {
                 if (words[0].startsWith( "q" )) {
                     break;
-                }
-                else {
+                } else if (words[0].startsWith("h")) {
+                    //gives hint and update
+                } else if (words[0].startsWith("l")) {
+                    //loads
+                } else if (words[0].startsWith("s")) {
+                    //selects and moves
+                } else if (words[0].startsWith("r")) {
+                    //reset the game
+                } else {
                     displayHelp();
                 }
             }

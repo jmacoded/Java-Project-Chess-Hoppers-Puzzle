@@ -1,9 +1,11 @@
 package puzzles.hoppers.model;
 
 import puzzles.common.Observer;
+import puzzles.common.solver.Configuration;
 import puzzles.common.solver.Solver;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -13,6 +15,10 @@ public class HoppersModel {
 
     /** the current configuration */
     private HoppersConfig currentConfig;
+    private ArrayList<Configuration> solution;
+    private String savedFileName;
+    private Character frog;
+    private char[][] grid;
 
     /**
      * The view calls this to add itself as an observer.
@@ -34,5 +40,24 @@ public class HoppersModel {
     }
 
     public HoppersModel(String filename) throws IOException {
+        this.currentConfig = new HoppersConfig(filename);
+        this.solution = null;
+        this.savedFileName = filename;
+        this.frog = null;
+        this.grid = null;
+    }
+
+    public Character getFrog(int row, int col) {
+        return '0';
+    }
+
+    public void moveFrog(int row, int col) {
+
+    }
+
+    public void hint() {
+        Solver solver = new Solver(this.currentConfig);
+        solution = solver.getShortestlist();
+
     }
 }

@@ -124,6 +124,10 @@ public class HoppersConfig implements Configuration{
         return northEastDiagonalNeighbors;
     }
 
+    public char[][] getGrid() {
+        return this.grid;
+    }
+
     @Override
     public boolean isSolution() {
         for (int column = 0; column < columnDIM; column++) {
