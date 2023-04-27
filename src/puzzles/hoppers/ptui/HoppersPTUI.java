@@ -12,11 +12,13 @@ public class HoppersPTUI implements Observer<HoppersModel, String> {
     private HoppersModel model;
     private boolean initialized;
     private PrintWriter out;
+    private String savedFilePath;
 
     public void init(String filename) throws IOException {
         this.initialized = false;
         this.model = new HoppersModel(filename);
         this.model.addObserver(this);
+        this.savedFilePath = filename;
         displayHelp();
     }
 
@@ -59,13 +61,11 @@ public class HoppersPTUI implements Observer<HoppersModel, String> {
                     System.out.println(this.model);
                 } else if (words[0].startsWith("l")) {
                     try {
-                        this.model = new HoppersModel(words[0]);
-                        System.out.println();
-                        System.out.println("Loaded: " + words[0]);
+                        this.model = new HoppersModel(words[1]);
                     } catch (IOException ioException) {
                         System.out.println("Failed to load: " + words[1]);
+                        System.out.println(this.model);
                     }
-                    System.out.println(this.model);
                 } else if (words[0].startsWith("s")) {
                     int result = this.model.select(Integer.parseInt(words[1]), Integer.parseInt(words[2]));
                     if (result == 1) {
@@ -85,7 +85,9 @@ public class HoppersPTUI implements Observer<HoppersModel, String> {
                     }
                     System.out.println(this.model);
                 } else if (words[0].startsWith("r")) {
-                    this.model.reset();
+                    try {
+                        this.model = new HoppersModel(this.savedFilePath);
+                    } catch (IOException ioException) {}
                     System.out.println("Puzzle reset!");
                     System.out.println(this.model);
                 } else {

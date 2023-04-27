@@ -48,6 +48,9 @@ public class HoppersModel {
         this.frog = null;
         this.savedRow = -1;
         this.savedCol = -1;
+        String[] file = filename.split("/");
+        System.out.println("Loaded: " + file[2]);
+        System.out.println(this);
     }
 
     public boolean hint() {
@@ -75,6 +78,7 @@ public class HoppersModel {
         } else {
             // check if the desired location is empty
             if (this.grid[row][col] != '.') {
+                this.frog = null;
                 return 4;
             }
             // receives and verifies the row and col for the midpoint between two points
@@ -91,6 +95,7 @@ public class HoppersModel {
                 middleCol = col - 1;
             }
             if (middleRow == -1 || middleCol == -1) {
+                this.frog = null;
                 return 4;
             }
             // proceeds to create a test config and compare it to currentConfig's neighbors
@@ -106,14 +111,10 @@ public class HoppersModel {
                 this.frog = null;
                 return 3;
             } else {
+                this.frog = null;
                 return 4;
             }
         }
-    }
-
-    public void reset() {
-        this.currentConfig = this.originalConfig;
-        this.grid = this.currentConfig.getGrid();
     }
 
     public int getSavedRow() {
