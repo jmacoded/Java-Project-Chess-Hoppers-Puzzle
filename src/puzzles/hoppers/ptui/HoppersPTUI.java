@@ -67,19 +67,19 @@ public class HoppersPTUI implements Observer<HoppersModel, String> {
                         System.out.println(this.model);
                     }
                 } else if (words[0].startsWith("s")) {
-                    int result = this.model.select(Integer.parseInt(words[1]), Integer.parseInt(words[2]));
+                    int result = this.model.select(Integer.parseInt(words[2]), Integer.parseInt(words[1]));
                     if (result == 1) {
                         System.out.println("Selected (" + words[1] + ", " + words[2] + ")");
                     } else if (result == 2) {
                         System.out.println("No frog at (" + words[1] + ", " + words[2] + ")");
                     } else if (result == 3) {
                         System.out.println("Jumped from (" +
-                                this.model.getSavedRow() + ", " + this.model.getSavedCol() +
+                                this.model.getSavedCol() + ", " + this.model.getSavedRow() +
                                 ")  to (" +
                                 words[1] + ", " + words[2] + ")");
                     } else if (result == 4) {
                         System.out.println("Can't jump from (" +
-                                this.model.getSavedRow() + ", " + this.model.getSavedCol() +
+                                this.model.getSavedCol() + ", " + this.model.getSavedRow() +
                                 ")  to (" +
                                 words[1] + ", " + words[2] + ")");
                     }
