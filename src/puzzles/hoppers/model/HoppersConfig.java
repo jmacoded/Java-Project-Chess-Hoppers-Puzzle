@@ -1,8 +1,6 @@
 package puzzles.hoppers.model;
 
-import puzzles.chess.model.ChessConfig;
 import puzzles.common.solver.Configuration;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -37,7 +35,7 @@ public class HoppersConfig implements Configuration{
         }
     }
 
-    private HoppersConfig(HoppersConfig copy) {
+    protected HoppersConfig(HoppersConfig copy) {
         this.grid = new char[rowDIM][columnDIM];
         for (int r = 0; r < rowDIM; r++) {
             System.arraycopy(copy.grid[r], 0, this.grid[r], 0, columnDIM);
@@ -126,6 +124,14 @@ public class HoppersConfig implements Configuration{
 
     public char[][] getGrid() {
         return this.grid;
+    }
+
+    public int getRowDIM(){
+        return rowDIM;
+    }
+
+    public int getColumnDIM() {
+        return columnDIM;
     }
 
     @Override

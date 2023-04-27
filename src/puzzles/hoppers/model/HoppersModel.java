@@ -6,6 +6,7 @@ import puzzles.common.solver.Solver;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -15,10 +16,11 @@ public class HoppersModel {
 
     /** the current configuration */
     private HoppersConfig currentConfig;
-    private ArrayList<Configuration> solution;
-    private String savedFileName;
+    private HoppersConfig originalConfig;
     private Character frog;
     private char[][] grid;
+    private int savedRow;
+    private int savedCol;
 
     /**
      * The view calls this to add itself as an observer.
@@ -41,23 +43,121 @@ public class HoppersModel {
 
     public HoppersModel(String filename) throws IOException {
         this.currentConfig = new HoppersConfig(filename);
-        this.solution = null;
-        this.savedFileName = filename;
+        this.originalConfig = new HoppersConfig(filename);
+        this.grid = currentConfig.getGrid();
         this.frog = null;
-        this.grid = null;
+        this.savedRow = -1;
+        this.savedCol = -1;
     }
 
-    public Character getFrog(int row, int col) {
-        return '0';
-    }
-
-    public void moveFrog(int row, int col) {
-
-    }
-
-    public void hint() {
+    public boolean hint() {
         Solver solver = new Solver(this.currentConfig);
-        solution = solver.getShortestlist();
+        ArrayList<Configuration> solverShortestList = solver.getShortestlist();
+        if (solverShortestList.size() == 0) {
+            return false;
+        } else {
+            this.currentConfig = (HoppersConfig) solverShortestList.get(1);
+            this.grid = this.currentConfig.getGrid();
+            return true;
+        }
+    }
 
+    public int select(int row, int col) {
+        if (this.frog == null) {
+            if (this.grid[row][col] == 'G' || this.grid[row][col] == 'R') {
+                this.frog = this.grid[row][col];
+                this.savedRow = row;
+                this.savedCol = col;
+                return 1;
+            } else {
+                return 2;
+            }
+        } else {
+            // check if the desired location is empty
+            if (this.grid[row][col] != '.') {
+                return 4;
+            }
+            // receives and verifies the row and col for the midpoint between two points
+            int middleRow = -1;
+            int middleCol = -1;
+            if (row < this.savedRow) {
+                middleRow = this.savedRow - 1;
+            } else if (row > this.savedRow) {
+                middleRow = row - 1;
+            }
+            if (col < this.savedCol) {
+                middleCol = this.savedCol - 1;
+            } else if (col > this.savedCol) {
+                middleCol = col - 1;
+            }
+            if (middleRow == -1 || middleCol == -1) {
+                return 4;
+            }
+            // proceeds to create a test config and compare it to currentConfig's neighbors
+            Collection<Configuration> neighbors = this.currentConfig.getNeighbors();
+            HoppersConfig testHoppersConfig = new HoppersConfig(this.currentConfig);
+            char[][] testGrid = testHoppersConfig.getGrid();
+            testGrid[savedRow][savedCol] = '.';
+            testGrid[row][col] = this.frog;
+            testGrid[middleRow][middleCol] = '.';
+            if (neighbors.contains(testHoppersConfig)) {
+                this.currentConfig = testHoppersConfig;
+                this.grid = this.currentConfig.getGrid();
+                this.frog = null;
+                return 3;
+            } else {
+                return 4;
+            }
+        }
+    }
+
+    public void reset() {
+        this.currentConfig = this.originalConfig;
+        this.grid = this.currentConfig.getGrid();
+    }
+
+    public int getSavedRow() {
+        return this.savedRow;
+    }
+
+    public int getSavedCol() {
+        return this.savedCol;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder string = new StringBuilder();
+        boolean firstTime = false;
+        string.append("   ");
+        for (int c= 0; c < (this.currentConfig.getColumnDIM()); c++){
+            if (firstTime) {
+                string.append(" " + c);
+            } else {
+                string.append(c);
+                firstTime = true;
+            }
+        }
+        firstTime = false;
+        string.append("\n");
+        string.append("  ");
+        for (int c = 2; c < (2 + 2 * this.currentConfig.getColumnDIM()); c++){
+            string.append("-");
+        }
+        string.append("\n");
+        for (int c = 0; c < this.currentConfig.getRowDIM(); c++) {
+            string.append(c + "| ");
+            for (int r = 0; r < this.currentConfig.getColumnDIM(); r++) {
+                if (firstTime) {
+                    string.append(" ");
+                    string.append(this.grid[r][c]);
+                } else {
+                    string.append(this.grid[r][c]);
+                    firstTime = true;
+                }
+            }
+            firstTime = false;
+            string.append("\n");
+        }
+        return string.toString();
     }
 }

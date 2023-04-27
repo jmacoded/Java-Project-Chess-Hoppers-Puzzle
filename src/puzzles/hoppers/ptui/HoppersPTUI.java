@@ -51,13 +51,43 @@ public class HoppersPTUI implements Observer<HoppersModel, String> {
                 if (words[0].startsWith( "q" )) {
                     break;
                 } else if (words[0].startsWith("h")) {
-                    //gives hint and update
+                    if (this.model.hint()) {
+                        System.out.println("Next step!");
+                    } else {
+                        System.out.println("No solution!");
+                    }
+                    System.out.println(this.model);
                 } else if (words[0].startsWith("l")) {
-                    //loads
+                    try {
+                        this.model = new HoppersModel(words[0]);
+                        System.out.println();
+                        System.out.println("Loaded: " + words[0]);
+                    } catch (IOException ioException) {
+                        System.out.println("Failed to load: " + words[1]);
+                    }
+                    System.out.println(this.model);
                 } else if (words[0].startsWith("s")) {
-                    //selects and moves
+                    int result = this.model.select(Integer.parseInt(words[1]), Integer.parseInt(words[2]));
+                    if (result == 1) {
+                        System.out.println("Selected (" + words[1] + ", " + words[2] + ")");
+                    } else if (result == 2) {
+                        System.out.println("No frog at (" + words[1] + ", " + words[2] + ")");
+                    } else if (result == 3) {
+                        System.out.println("Jumped from (" +
+                                this.model.getSavedRow() + ", " + this.model.getSavedCol() +
+                                ")  to (" +
+                                words[1] + ", " + words[2] + ")");
+                    } else if (result == 4) {
+                        System.out.println("Can't jump from (" +
+                                this.model.getSavedRow() + ", " + this.model.getSavedCol() +
+                                ")  to (" +
+                                words[1] + ", " + words[2] + ")");
+                    }
+                    System.out.println(this.model);
                 } else if (words[0].startsWith("r")) {
-                    //reset the game
+                    this.model.reset();
+                    System.out.println("Puzzle reset!");
+                    System.out.println(this.model);
                 } else {
                     displayHelp();
                 }
@@ -70,7 +100,7 @@ public class HoppersPTUI implements Observer<HoppersModel, String> {
             System.out.println("Usage: java HoppersPTUI filename");
         } else {
             try {
-                ChessPTUI ptui = new ChessPTUI();
+                HoppersPTUI ptui = new HoppersPTUI();
                 ptui.init(args[0]);
                 ptui.run();
             } catch (IOException ioe) {
