@@ -70,9 +70,8 @@ public class ChessModel {
             this.config = new ChessConfig(filename);
             this.init = new ChessConfig(filename);
             this.grid = config.getGrid();
-//            System.out.println(currentConfig);
-//            currentConfig.getGrid();
-//            this.grid = currentConfig.getGrid();
+            this.rows = config.getRowDIM();
+            this.columns = config.getColumnDIM();
     }
 
     public ChessModel load(String filepath) throws IOException{
@@ -109,10 +108,23 @@ public class ChessModel {
         return this.config.cellCheck(piece);
     }
 
+    public int getColumns() {
+        return columns;
+    }
+
+    public int getRows() {
+        return rows;
+    }
+
+    public char[][] getGrid() {
+        return grid;
+    }
+
     public void solving(){
         Solver solver = new Solver(this.config);
         shortestlist = solver.getShortestlist();
         this.config = (ChessConfig) shortestlist.get(1);
+        this.alertObservers("Next step!");
     }
 
     @Override
