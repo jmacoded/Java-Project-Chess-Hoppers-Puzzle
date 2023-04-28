@@ -61,7 +61,7 @@ public class HoppersPTUI implements Observer<HoppersModel, String> {
                     System.out.println(this.model);
                 } else if (words[0].startsWith("l")) {
                     try {
-                        this.model = new HoppersModel(words[1]);
+                        this.model = this.model.load(words[1]);
                     } catch (IOException ioException) {
                         System.out.println("Failed to load: " + words[1]);
                         System.out.println(this.model);
@@ -86,8 +86,8 @@ public class HoppersPTUI implements Observer<HoppersModel, String> {
                     System.out.println(this.model);
                 } else if (words[0].startsWith("r")) {
                     try {
-                        this.model = new HoppersModel(this.savedFilePath);
-                    } catch (IOException ioException) {}
+                        this.model = this.model.load(this.savedFilePath);
+                    } catch (IOException ignored) {}
                     System.out.println("Puzzle reset!");
                     System.out.println(this.model);
                 } else {

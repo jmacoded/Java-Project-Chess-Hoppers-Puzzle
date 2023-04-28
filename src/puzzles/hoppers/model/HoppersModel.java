@@ -16,7 +16,6 @@ public class HoppersModel {
 
     /** the current configuration */
     private HoppersConfig currentConfig;
-    private HoppersConfig originalConfig;
     private Character frog;
     private char[][] grid;
     private int savedRow;
@@ -43,14 +42,10 @@ public class HoppersModel {
 
     public HoppersModel(String filename) throws IOException {
         this.currentConfig = new HoppersConfig(filename);
-        this.originalConfig = new HoppersConfig(filename);
         this.grid = currentConfig.getGrid();
         this.frog = null;
         this.savedRow = -1;
         this.savedCol = -1;
-        String[] file = filename.split("/");
-        System.out.println("Loaded: " + file[2]);
-        System.out.println(this);
     }
 
     public boolean hint() {
@@ -63,6 +58,14 @@ public class HoppersModel {
             this.grid = this.currentConfig.getGrid();
             return true;
         }
+    }
+
+    public HoppersModel load(String filename) throws IOException {
+        HoppersModel hoppersModel = new HoppersModel(filename);
+        String[] file = filename.split("/");
+        System.out.println("Loaded: " + file[2]);
+        System.out.println(hoppersModel);
+        return hoppersModel;
     }
 
     public int select(int row, int col) {
