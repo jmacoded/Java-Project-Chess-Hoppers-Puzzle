@@ -23,9 +23,13 @@ public class ChessPTUI implements Observer<ChessModel, String> {
 
     @Override
     public void update(ChessModel model, String data) {
-        // for demonstration purposes
-        System.out.println(data);
-        System.out.println(model);
+        if (data.equals("Next step!")){
+            System.out.println(data);
+            System.out.println(model);
+        }
+        if (data.equals("select")){
+            //TODO
+        }
     }
 
     private void displayHelp() {
@@ -48,7 +52,6 @@ public class ChessPTUI implements Observer<ChessModel, String> {
                 }
                 else if (words[0].startsWith("s")) {
                     if (model.validSelection(Integer.parseInt(words[1]), Integer.parseInt(words[2]))) {
-                        System.out.println("Selected (" + words[1] + ", " + words[2] + ")");
                         System.out.println(this.model);
                         String line2 = in.nextLine();
                         String[] words2 = line2.split("\\s+");
@@ -73,17 +76,17 @@ public class ChessPTUI implements Observer<ChessModel, String> {
                 else if (words[0].startsWith("r")) {
                     try{
                         this.model = this.model.load(file);
+                        this.model.addObserver(this);
                     } catch (IOException e){};
                     System.out.println("Puzzle reset!");
                     System.out.println(this.model);
                 }
                 else if (words[0].startsWith("h")){
-                    System.out.println("Next step!");
                     this.model.solving();
-                    System.out.println(this.model);
                 } else if (words[0].startsWith("l")) {
                     try {
                         this.model = this.model.load(words[1]);
+                        this.model.addObserver(this);
                     } catch (IOException e) {
                         System.out.println("Failed to load: " +  words[1]);
                         System.out.println(this.model);
