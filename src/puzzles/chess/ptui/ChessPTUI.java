@@ -14,6 +14,10 @@ public class ChessPTUI implements Observer<ChessModel, String> {
     public void init(String filename) throws IOException {
         this.model = new ChessModel(filename);
         this.model.addObserver(this);
+        this.file = filename;
+        String[] filething = filename.split("/");
+        System.out.println("Loaded: " + filething[2]);
+        System.out.println(model);
         displayHelp();
     }
 
@@ -44,31 +48,94 @@ public class ChessPTUI implements Observer<ChessModel, String> {
                 }
                 else if (words[0].startsWith("s")) {
                     if (model.validSelection(Integer.parseInt(words[1]), Integer.parseInt(words[2]))) {
-                        System.out.print( "> " );
+                        System.out.println("Selected (" + words[1] + ", " + words[2] + ")");
+                        System.out.println(this.model);
                         String line2 = in.nextLine();
                         String[] words2 = line2.split("\\s+");
                         if (words2[0].startsWith("s")) {
-                            model.enterMove(Integer.parseInt(words[1]), Integer.parseInt(words[2]), Integer.parseInt(words2[1]), Integer.parseInt(words2[2]));
+                            int result = this.model.enterMove(Integer.parseInt(words[1]), Integer.parseInt(words[2]), Integer.parseInt(words2[1]), Integer.parseInt(words2[2]));
+                            if (result == 0) {
+                                System.out.println("> Captured from (" + words[1] + ", " + words[2] + ")  to (" + words2[1] + ", " + words2[2] + ")");
+                                System.out.println(this.model);
+                            } else if (result == 1){
+                                System.out.println("> Can't capture from (" + words[1] + ", " + words[2] + ")  to (" + words2[1] + ", " + words2[2] + ")");
+                                System.out.println(this.model);
+                            } else if (result == -1){
+                                System.out.println("> Invalid selection (" + words[1] + ", " + words[2] + ")");
+                                System.out.println(this.model);
+                            }
                         }
+                    } else {
+                        System.out.println("Invalid selection (" + words[1] + ", " + words[2] + ")");
+                        System.out.println(this.model);
                     }
                 }
                 else if (words[0].startsWith("r")) {
-                    model.reset();
+                    try{
+                        this.model = this.model.load(file);
+                    } catch (IOException e){};
+                    System.out.println("Puzzle reset!");
+                    System.out.println(this.model);
                 }
                 else if (words[0].startsWith("h")){
-                    model.solving();
-                }
-
-                else if (words[0].startsWith("l")) {
+                    System.out.println("Next step!");
+                    this.model.solving();
+                    System.out.println(this.model);
+                } else if (words[0].startsWith("l")) {
                     try {
-                        this.model = new ChessModel(words[1]);
-                    } catch (IOException e) {}
+                        this.model = this.model.load(words[1]);
+                    } catch (IOException e) {
+                        System.out.println("Failed to load: " +  words[1]);
+                        System.out.println(this.model);
+                    }
+
                 } else {
                     displayHelp();
                 }
             }
         }
     }
+//    public void run() {
+//        Scanner in = new Scanner( System.in );
+//        for ( ; ; ) {
+//            System.out.print( "> " );
+//            String line = in.nextLine();
+//            String[] words = line.split( "\\s+" );
+//            if (words.length > 0) {
+//                if (words[0].startsWith("q")) {
+//                    break;
+//                }
+//                else if (words[0].startsWith("s")) {
+//                    System.out.println("Selected at (" + words[1] + ", " + words[2] + ")");
+//                    if (model.validSelection(Integer.parseInt(words[1]), Integer.parseInt(words[2]))) {
+//                        System.out.print( "> " );
+//                        String line2 = in.nextLine();
+//                        String[] words2 = line2.split("\\s+");
+//                        if (words2[0].startsWith("s")) {
+//                            model.enterMove(Integer.parseInt(words[1]), Integer.parseInt(words[2]), Integer.parseInt(words2[1]), Integer.parseInt(words2[2]));
+//                        }
+//                    }
+//                }
+//                else if (words[0].startsWith("r")) {
+//                    model.reset();
+//                }
+//                else if (words[0].startsWith("h")){
+//                    model.solving();
+//                }
+//
+//                else if (words[0].startsWith("l")) {
+//                    try {
+//                        this.model = new ChessModel(words[1]);
+//                    } catch (IOException e) {
+//                        System.out.println("Failed to load: " +  words[1]);
+//                        System.out.println(this.model);
+//                    }
+//                } else {
+//                    displayHelp();
+//                }
+//            }
+//        }
+//    }
 
     public static void main(String[] args) {
         if (args.length != 1) {

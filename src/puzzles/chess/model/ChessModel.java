@@ -67,109 +67,78 @@ public class ChessModel {
     }
 
     public ChessModel(String filename) throws IOException {
-        try {
-            init = new ChessConfig(filename);
-            primary = new ChessConfig(filename);
-            String[] file = filename.split("/");
-            String message = "Loaded: " + file[2];
-            System.out.println(message);
-            currentConfig = new ChessConfig(filename);
-            model = new ChessModel(currentConfig);
+            this.config = new ChessConfig(filename);
+            this.init = new ChessConfig(filename);
+            this.grid = config.getGrid();
 //            System.out.println(currentConfig);
 //            currentConfig.getGrid();
 //            this.grid = currentConfig.getGrid();
-        } catch (IOException e ){
-
-            fail(filename);}
-    }
-    public ChessModel(ChessConfig config){
-        this.grid = config.getGrid();
-        this.config = config;
-        this.columns = config.getColumnDIM();
-        this.rows = config.getRowDIM();
     }
 
-    public void enterMove(int x1, int y1, int x2, int y2){
-        nextmoves = currentConfig.getNeighbors();
-        char piece = currentConfig.getGrid()[x1][y1];
-        if (currentConfig.cellCheck(piece)){
-            if (currentConfig.cellCheck(piece)){
-                currentConfig.getGrid()[x1][y1] = EMPTY;
-                currentConfig.getGrid()[x2][y2] = piece;
-                if (nextmoves.contains(currentConfig)){
-                    ChessModel initModel = new ChessModel(currentConfig);
-                    System.out.println("Captured from (" + x1+ ", " + y1 + ")  to (" + x2 + ", " + y2 + ")");
-                    System.out.println(initModel);
-                    // successful capture
-                } else {
-                    System.out.println("Can't capture from  (" + x1+ ", " + y1 + ")  to (" + x2 + ", " + y2 + ")");
-                    model = new ChessModel(init);
-                    System.out.println(model);
-                }
+    public ChessModel load(String filepath) throws IOException{
+        ChessModel chessModel = new ChessModel(filepath);
+        String[] filename = filepath.split("/");
+        System.out.println("Loaded: " + filename[2]);
+        System.out.println(chessModel);
+        return chessModel;
+
+    }
+
+    public int enterMove(int x1, int y1, int x2, int y2){
+        nextmoves = config.getNeighbors();
+        char piece = config.getGrid()[x1][y1];
+        char piece2 = config.getGrid()[x2][y2];
+        if (config.cellCheck(piece)){
+            config.getGrid()[x1][y1] = EMPTY;
+            config.getGrid()[x2][y2] = piece;
+            if (nextmoves.contains(config)){
+                // successful capture
+                return 0;
             } else {
-                System.out.println("Can't capture from  (" + x1+ ", " + y1 + ")  to (" + x2 + ", " + y2 + ")");
-                model = new ChessModel(init);
-                System.out.println(model);
+                config.getGrid()[x1][y1] = piece;
+                config.getGrid()[x2][y2] = piece2;
+                return 1;
             }
         } else {
-            System.out.println("Invalid selection (" + + x1+ ", " + y1 + ")");
-            model = new ChessModel(init);
-            System.out.println(model);
+            return -1;
         }
     }
 
     public boolean validSelection(int x1, int y1) {
-        char piece = currentConfig.getGrid()[x1][y1];
-        model = new ChessModel(currentConfig);
-        if (currentConfig.cellCheck(piece)) {
-            System.out.println("Selected at (" + x1 + ", " + y1 + ")");
-            System.out.println(model);
-            return true;
-        }
-        System.out.println("Invalid selection (" + x1 + ", " + y1 + ")");
-        System.out.println(model);
-        return false;
+        char piece = this.config.getGrid()[x1][y1];
+        return this.config.cellCheck(piece);
     }
 
     public void solving(){
-        Solver solver = new Solver(currentConfig);
+        Solver solver = new Solver(this.config);
         shortestlist = solver.getShortestlist();
-        System.out.println("Next step!");
-        currentConfig = (ChessConfig) shortestlist.get(1);
-        model = new ChessModel(currentConfig);
-        System.out.println(model);
-    }
-
-
-    public void reset(){
-        currentConfig = primary;
-        System.out.println("Puzzle reset!");
-        model = new ChessModel(currentConfig);
-        System.out.println(model);
-    }
-    public void fail(String string){
-        System.out.println("Failed to load: " + string);
-        System.out.println(model);
+        this.config = (ChessConfig) shortestlist.get(1);
     }
 
     @Override
     public String toString() {
         StringBuilder string = new StringBuilder();
         string.append("   ");
-        for (int c= 0; c < model.config.getColumnDIM(); c++){
-            string.append(c + " ");
+        for (int c= 0; c < this.config.getColumnDIM(); c++){
+            string.append(c);
+            if (c < this.config.getColumnDIM() -1){
+                string.append(" ");
+            }
+
         }
         string.append("\n");
         string.append("  ");
-        for (int c = 0; c < (2* model.columns); c++){
+        for (int c = 0; c < (2* this.config.getColumnDIM()); c++){
             string.append("-");
         }
         string.append("\n");
-        for (int r = 2; r < model.rows + 2; r++) {
+        for (int r = 2; r < this.config.getRowDIM() + 2; r++) {
             string.append(r - 2 + "| ");
-            for (int c = 2; c < model.columns + 2; c++) {
-                string.append(model.config.getCell(r-2, c-2));
-                string.append(" ");
+            for (int c = 2; c < this.config.getColumnDIM() + 2; c++) {
+                string.append(this.config.getCell(r-2, c-2));
+                if (c < this.config.getColumnDIM() + 1){
+                    string.append(" ");
+                }
             }
             string.append("\n");
         }
