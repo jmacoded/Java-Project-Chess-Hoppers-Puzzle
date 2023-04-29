@@ -5,6 +5,7 @@ import puzzles.common.Observer;
 import puzzles.common.solver.Configuration;
 import puzzles.common.solver.Solver;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,6 +21,9 @@ public class ChessModel {
 
     private ChessConfig init;
     private ChessConfig primary;
+
+    private int firstCol;
+    private int firstRow;
 
     private ArrayList<Configuration> shortestlist;
 
@@ -65,9 +69,11 @@ public class ChessModel {
     public ChessModel(String filename) throws IOException {
             this.config = new ChessConfig(filename);
             this.init = new ChessConfig(filename);
-            this.grid = config.getGrid();
             this.rows = config.getRowDIM();
+            this.grid = config.getGrid();
             this.columns = config.getColumnDIM();
+            this.firstCol = -1;
+            this.firstRow = -1;
     }
 
     public void load(String filepath) throws IOException{
@@ -77,6 +83,22 @@ public class ChessModel {
         alertObservers("Loaded: " + filename[2]);
     }
 
+    public void load(File filepath) throws IOException{
+        config = new ChessConfig(filepath.getPath());
+        this.filepath = filepath.getName();
+        alertObservers("Loaded: " + filepath.getName());
+    }
+
+    public void waitingRoom (int x1, int y1){
+        if (firstRow == -1 & firstCol == -1){
+            validSelection(x1, y1);
+
+        } else {
+            enterMove(firstRow, firstCol, x1, y1);
+            firstRow = -1;
+            firstCol = -1;
+        }
+    }
     public int enterMove(int x1, int y1, int x2, int y2){
         nextmoves = config.getNeighbors();
         char piece = config.getGrid()[x1][y1];
@@ -86,29 +108,29 @@ public class ChessModel {
             config.getGrid()[x2][y2] = piece;
             if (nextmoves.contains(config)){
                 // successful capture
-                alertObservers("> Captured from (" + x1 + ", " + y1 + ")  to (" + x2 + ", " + y2 + ")");
+                alertObservers("Captured from (" + x1 + ", " + y1 + ")  to (" + x2 + ", " + y2 + ")");
 
                 return 0;
             } else {
                 config.getGrid()[x1][y1] = piece;
                 config.getGrid()[x2][y2] = piece2;
-                alertObservers("> Can't capture from (" + x1 + ", " + y1 + ")  to (" + x2 + ", " + y2 + ")");
+                alertObservers("Can't capture from (" + x1 + ", " + y1 + ")  to (" + x2 + ", " + y2 + ")");
                 return 1;
             }
         } else {
-            alertObservers("> Invalid selection (" + x1 + ", " + y1 + ")");
+            alertObservers("Invalid selection (" + x1 + ", " + y1 + ")");
             return -1;
         }
     }
 
-    public boolean validSelection(int x1, int y1) {
+    public void validSelection(int x1, int y1) {
         char piece = this.config.getGrid()[x1][y1];
         if( this.config.cellCheck(piece)){
             alertObservers("Selected (" + x1 + ", " + y1 + ")");
-            return true;
+            firstRow = x1;
+            firstCol = y1;
         } else {
             alertObservers("Invalid selection (" + x1 + ", " + y1 + ")");
-            return false;
         }
     }
 
@@ -118,22 +140,26 @@ public class ChessModel {
     }
 
     public int getColumns() {
-        return columns;
+        return config.getColumnDIM();
     }
 
     public int getRows() {
-        return rows;
+        return config.getRowDIM();
     }
 
     public char[][] getGrid() {
-        return grid;
+        return config.getGrid();
     }
 
     public void solving(){
         Solver solver = new Solver(this.config);
         shortestlist = solver.getShortestlist();
-        this.config = (ChessConfig) shortestlist.get(1);
-        this.alertObservers("Next step!");
+        if (!shortestlist.isEmpty()){
+            this.config = (ChessConfig) shortestlist.get(1);
+            this.alertObservers("Next step!");
+        } else {
+            this.alertObservers("No solution");
+        }
     }
     public void fail(String file){
         this.alertObservers("Failed to load: " + file);

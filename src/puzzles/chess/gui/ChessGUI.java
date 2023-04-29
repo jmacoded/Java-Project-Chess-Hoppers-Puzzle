@@ -8,13 +8,16 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import puzzles.common.Observer;
 import puzzles.chess.model.ChessModel;
 import puzzles.hoppers.model.HoppersModel;
 import javafx.scene.control.Label;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 
 
 public class ChessGUI extends Application implements Observer<ChessModel, String> {
@@ -29,6 +32,7 @@ public class ChessGUI extends Application implements Observer<ChessModel, String
 
     private Label label;
 
+    private String filepath;
     private String file;
     char BISHOP = 'B';
     char KING = 'K';
@@ -50,6 +54,8 @@ public class ChessGUI extends Application implements Observer<ChessModel, String
     private Image rook = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"rook.png"));
 
     private GridPane board;
+    private BorderPane borderPane;
+
     /** a definition of light and dark and for the button backgrounds */
     private static final Background LIGHT =
             new Background( new BackgroundFill(Color.WHITE, null, null));
@@ -59,10 +65,10 @@ public class ChessGUI extends Application implements Observer<ChessModel, String
     @Override
     public void init() {
         // get the file name from the command line
-        String filename = getParameters().getRaw().get(0);
-        file = filename.split("/")[2];
+        filepath = getParameters().getRaw().get(0);
+        file = filepath.split("/")[2];
         try {
-            model = new ChessModel(filename);
+            model = new ChessModel(filepath);
             this.model.addObserver(this);
         } catch (IOException e){}
     }
@@ -71,10 +77,13 @@ public class ChessGUI extends Application implements Observer<ChessModel, String
     public void start(Stage stage) throws Exception {
         this.stage = stage;
         stage.setTitle("Chess GUI");
-        BorderPane borderPane = new BorderPane();
-        Label label = new Label("Loaded: " + file);
-        borderPane.setTop(label);
-        label.setAlignment(Pos.CENTER_RIGHT);
+        borderPane = new BorderPane();
+        label = new Label("Loaded: " + file);
+        HBox labelbox = new HBox();
+        labelbox.getChildren().add(label);
+        borderPane.setTop(labelbox);
+        labelbox.setAlignment(Pos.CENTER);
+
 
         HBox hbox = buttons();
         borderPane.setBottom(hbox);
@@ -97,57 +106,79 @@ public class ChessGUI extends Application implements Observer<ChessModel, String
 
     private GridPane board(){
         char[][] grid = model.getGrid();
-        GridPane gridPane = new GridPane();
+        board = new GridPane();
         for (int row=0; row< model.getRows(); ++row) {
             for (int col = 0; col < model.getColumns(); ++col) {
                 if (grid[row][col] == BISHOP) {
                     Button button = new Button();
                     button.setGraphic(new ImageView(bishop));
                     setButton(button, row, col);
-                    gridPane.add(button, col, row);
+                    board.add(button, col, row);
                 } else if (grid[row][col] == KNIGHT) {
                     Button button = new Button();
                     button.setGraphic(new ImageView(knight));
                     setButton(button, row, col);
-                    gridPane.add(button, col, row);
+                    board.add(button, col, row);
                 } else if (grid[row][col] == KING) {
                     Button button = new Button();
                     button.setGraphic(new ImageView(king));
                     setButton(button, row, col);
-                    gridPane.add(button, col, row);
+                    board.add(button, col, row);
                 } else if (grid[row][col] == PAWN) {
                     Button button = new Button();
                     button.setGraphic(new ImageView(pawn));
                     setButton(button, row, col);
-                    gridPane.add(button, col, row);
+                    board.add(button, col, row);
                 } else if (grid[row][col] == QUEEN) {
                     Button button = new Button();
                     button.setGraphic(new ImageView(queen));
                     setButton(button, row, col);
-                    gridPane.add(button, col, row);
+                    board.add(button, col, row);
                 } else if (grid[row][col] == ROOK) {
                     Button button = new Button();
                     button.setGraphic(new ImageView(rook));
                     setButton(button, row, col);
-                    gridPane.add(button, col, row);
+                    board.add(button, col, row);
                 } else {
                     Button button = new Button();
                     setButton(button, row, col);
-                    gridPane.add(button, col, row);
+                    board.add(button, col, row);
                 }
             }
         }
-        return gridPane;
+        return board;
     }
     private HBox buttons(){
         HBox hbox = new HBox();
         Button Load = new Button("Load");
+        Load.setOnAction(event -> loader());
         Button Reset = new Button("Reset");
+        Reset.setOnAction(event -> reseter());
         Button Hint = new Button("Hint");
+        Hint.setOnAction(event -> hinter());
         hbox.getChildren().addAll(Load, Reset, Hint);
         return hbox;
     }
 
+    public void reseter(){
+        try {
+            this.model.reset(filepath);
+        }catch (IOException e){}
+    }
+    public void hinter(){
+        this.model.solving();
+    }
+    public void loader(){
+        FileChooser chooser = new FileChooser();
+        String currentPath = Paths.get(".").toAbsolutePath().normalize().toString();
+        currentPath += File.separator + "data" + File.separator + "chess";  // or "hoppers"
+        chooser.setInitialDirectory(new File(currentPath));
+        File file = chooser.showOpenDialog(stage);
+        filepath = file.getPath();
+        try{
+            this.model.load(file);
+        } catch (IOException e){}
+    }
     private void setButton(Button button,int row, int col) {
         if ((row + col) % 2 == 0) {
             button.setBackground(LIGHT);
@@ -156,13 +187,16 @@ public class ChessGUI extends Application implements Observer<ChessModel, String
         }
         button.setMinSize(ICON_SIZE, ICON_SIZE);
         button.setMaxSize(ICON_SIZE, ICON_SIZE);
-
+        button.setOnAction(e -> model.waitingRoom(row, col));
     }
 
     @Override
     public void update(ChessModel chessModel, String msg) {
 
+        board = board();
+        borderPane.setCenter(board);
         this.stage.sizeToScene();  // when a different sized puzzle is loaded
+        label.setText(msg);
     }
 
     public static void main(String[] args) {

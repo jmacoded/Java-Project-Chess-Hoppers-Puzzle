@@ -53,13 +53,7 @@ public class ChessPTUI implements Observer<ChessModel, String> {
                     break;
                 }
                 else if (words[0].startsWith("s")) {
-                    if (model.validSelection(Integer.parseInt(words[1]), Integer.parseInt(words[2]))) {
-                        String line2 = in.nextLine();
-                        String[] words2 = line2.split("\\s+");
-                        if (words2[0].startsWith("s")) {
-                            this.model.enterMove(Integer.parseInt(words[1]), Integer.parseInt(words[2]), Integer.parseInt(words2[1]), Integer.parseInt(words2[2]));
-                        }
-                    }
+                    model.waitingRoom(Integer.parseInt(words[1]), Integer.parseInt(words[2]));
                 }
                 else if (words[0].startsWith("r")) {
                     try{
