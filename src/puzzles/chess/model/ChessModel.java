@@ -16,10 +16,6 @@ public class ChessModel {
     private final List<Observer<ChessModel, String>> observers = new LinkedList<>();
 
     /** the current configuration */
-    private ChessConfig currentConfig;
-
-    private ArrayList<ChessConfig> shortSolution;
-
     private char[][] grid;
 
     private ChessConfig init;
@@ -32,8 +28,8 @@ public class ChessModel {
     private int columns;
     private int rows;
 
-    private static ChessModel model;
     private ChessConfig config;
+    private String filepath;
 
     char EMPTY = '.';
 
@@ -74,13 +70,11 @@ public class ChessModel {
             this.columns = config.getColumnDIM();
     }
 
-    public ChessModel load(String filepath) throws IOException{
-        ChessModel chessModel = new ChessModel(filepath);
+    public void load(String filepath) throws IOException{
+        config = new ChessConfig(filepath);
+        this.filepath = filepath;
         String[] filename = filepath.split("/");
-        System.out.println("Loaded: " + filename[2]);
-        System.out.println(chessModel);
-        return chessModel;
-
+        alertObservers("Loaded: " + filename[2]);
     }
 
     public int enterMove(int x1, int y1, int x2, int y2){
@@ -92,20 +86,35 @@ public class ChessModel {
             config.getGrid()[x2][y2] = piece;
             if (nextmoves.contains(config)){
                 // successful capture
+                alertObservers("> Captured from (" + x1 + ", " + y1 + ")  to (" + x2 + ", " + y2 + ")");
+
                 return 0;
             } else {
                 config.getGrid()[x1][y1] = piece;
                 config.getGrid()[x2][y2] = piece2;
+                alertObservers("> Can't capture from (" + x1 + ", " + y1 + ")  to (" + x2 + ", " + y2 + ")");
                 return 1;
             }
         } else {
+            alertObservers("> Invalid selection (" + x1 + ", " + y1 + ")");
             return -1;
         }
     }
 
     public boolean validSelection(int x1, int y1) {
         char piece = this.config.getGrid()[x1][y1];
-        return this.config.cellCheck(piece);
+        if( this.config.cellCheck(piece)){
+            alertObservers("Selected (" + x1 + ", " + y1 + ")");
+            return true;
+        } else {
+            alertObservers("Invalid selection (" + x1 + ", " + y1 + ")");
+            return false;
+        }
+    }
+
+    public void reset(String file) throws IOException{
+        load(file);
+        alertObservers("Puzzle reset!");
     }
 
     public int getColumns() {
@@ -126,6 +135,9 @@ public class ChessModel {
         this.config = (ChessConfig) shortestlist.get(1);
         this.alertObservers("Next step!");
     }
+    public void fail(String file){
+        this.alertObservers("Failed to load: " + file);
+    }
 
     @Override
     public String toString() {
@@ -136,7 +148,6 @@ public class ChessModel {
             if (c < this.config.getColumnDIM() -1){
                 string.append(" ");
             }
-
         }
         string.append("\n");
         string.append("  ");
