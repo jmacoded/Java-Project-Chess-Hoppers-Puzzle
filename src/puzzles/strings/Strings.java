@@ -3,6 +3,11 @@ package puzzles.strings;
 import puzzles.common.solver.Configuration;
 import puzzles.common.solver.Solver;
 
+/**
+ * The main program for the strings puzzle
+ *
+ * @author Teju Rajbabu
+ */
 public class Strings {
     /**
      * starts up the Strings puzzle application.

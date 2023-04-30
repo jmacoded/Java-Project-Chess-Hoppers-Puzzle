@@ -3,6 +3,11 @@ package puzzles.clock;
 import puzzles.common.solver.Configuration;
 import puzzles.common.solver.Solver;
 
+/**
+ * The main program for the clock puzzle
+ *
+ * @author Teju Rajbabu
+ */
 public class Clock {
     /**
      * starts up the Clock puzzle application.

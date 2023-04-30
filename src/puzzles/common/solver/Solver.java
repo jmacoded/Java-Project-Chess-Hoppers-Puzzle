@@ -5,6 +5,13 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+
+/**
+ * The Solver for different game modes
+ *
+ * @author Teju Rajbabu & Jamie Antal
+ */
+
 public class Solver {
     /** Hashmap of Configuration keys and Configuration values*/
     private HashMap<Configuration, Configuration> map;
