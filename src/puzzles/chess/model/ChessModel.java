@@ -154,12 +154,17 @@ public class ChessModel {
     public void solving(){
         Solver solver = new Solver(this.config);
         shortestlist = solver.getShortestlist();
-        if (!shortestlist.isEmpty()){
-            this.config = (ChessConfig) shortestlist.get(1);
-            this.alertObservers("Next step!");
+        if (!config.isSolution()){
+            if (!shortestlist.isEmpty()){
+                this.config = (ChessConfig) shortestlist.get(1);
+                this.alertObservers("Next step!");
+            } else {
+                this.alertObservers("No solution");
+            }
         } else {
-            this.alertObservers("No solution");
+            this.alertObservers("Already solved!");
         }
+
     }
     public void fail(String file){
         this.alertObservers("Failed to load: " + file);
