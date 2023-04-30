@@ -5,6 +5,11 @@ import puzzles.common.solver.Configuration;
 import java.util.Collection;
 import java.util.LinkedList;
 
+/**
+ * The Clock configuration object for the clock puzzle. Implements Configuration
+ *
+ * @author Teju Rajbabu
+ */
 public class ClockConfig implements Configuration {
     /** hour to start at or current hour */
     private int start;

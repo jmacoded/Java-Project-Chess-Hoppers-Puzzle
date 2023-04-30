@@ -5,6 +5,12 @@ import puzzles.common.solver.Configuration;
 import java.util.Collection;
 import java.util.LinkedList;
 
+
+/**
+ * The Strings configuration object for the strings puzzle. Implements Configuration
+ *
+ * @author Teju Rajbabu
+ */
 public class StringsConfig implements Configuration {
     /** Changing string */
 
