@@ -4,6 +4,7 @@ import puzzles.common.Observer;
 import puzzles.common.solver.Configuration;
 import puzzles.common.solver.Solver;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,41 +49,58 @@ public class HoppersModel {
         this.savedCol = -1;
     }
 
-    public boolean hint() {
+    public void hint() {
         Solver solver = new Solver(this.currentConfig);
         ArrayList<Configuration> solverShortestList = solver.getShortestlist();
-        if (solverShortestList.size() == 0) {
-            return false;
+        if (!this.currentConfig.isSolution()) {
+            if (solverShortestList.size() == 0) {
+                alertObservers("No solution!");
+            } else {
+                this.currentConfig = (HoppersConfig) solverShortestList.get(1);
+                this.grid = this.currentConfig.getGrid();
+                alertObservers("Next step!");
+            }
         } else {
-            this.currentConfig = (HoppersConfig) solverShortestList.get(1);
-            this.grid = this.currentConfig.getGrid();
-            return true;
+            alertObservers("Already solved!");
         }
     }
 
-    public HoppersModel load(String filename) throws IOException {
-        HoppersModel hoppersModel = new HoppersModel(filename);
+    public void load(String filename) throws IOException {
+        this.currentConfig = new HoppersConfig(filename);
+        this.grid = this.currentConfig.getGrid();
         String[] file = filename.split("/");
-        System.out.println("Loaded: " + file[2]);
-        System.out.println(hoppersModel);
-        return hoppersModel;
+        alertObservers("Loaded: " + file[2]);
     }
 
-    public int select(int row, int col) {
+    public void load(File file) throws IOException {
+        this.currentConfig = new HoppersConfig(file.getPath());
+        this.grid = this.currentConfig.getGrid();
+        alertObservers("Loaded: " + file.getName());
+    }
+
+    public void fail(String filename) {
+        alertObservers("Failed to load: " + filename);
+    }
+
+    public void select(int row, int col) {
         if (this.frog == null) {
             if (this.grid[row][col] == 'G' || this.grid[row][col] == 'R') {
                 this.frog = this.grid[row][col];
                 this.savedRow = row;
                 this.savedCol = col;
-                return 1;
+                alertObservers("Selected (" + col + ", " + row + ")");
+            } else if (this.grid[row][col] == '.') {
+                alertObservers("No frog at (" + col + ", " + row + ")");
             } else {
-                return 2;
+                alertObservers("Invalid selection (" + col + ", " + row + ")");
             }
         } else {
             // check if the desired location is empty
             if (this.grid[row][col] != '.') {
                 this.frog = null;
-                return 4;
+                alertObservers("Can't jump from (" + this.savedCol + ", " + this.savedRow + ")  to (" +
+                        col + ", " + row + ")");
+                return;
             }
             // receives and verifies the row and col for the midpoint between two points
             int middleRow = -1;
@@ -91,15 +109,20 @@ public class HoppersModel {
                 middleRow = this.savedRow - 1;
             } else if (row > this.savedRow) {
                 middleRow = row - 1;
+            } else {
+                middleRow = row;
             }
             if (col < this.savedCol) {
                 middleCol = this.savedCol - 1;
             } else if (col > this.savedCol) {
                 middleCol = col - 1;
+            } else {
+                middleCol = col;
             }
-            if (middleRow == -1 || middleCol == -1) {
-                this.frog = null;
-                return 4;
+            if (row == this.savedRow) {
+                middleCol = col - 2;
+            } else if (col == this.savedCol) {
+                middleRow = row - 2;
             }
             // proceeds to create a test config and compare it to currentConfig's neighbors
             Collection<Configuration> neighbors = this.currentConfig.getNeighbors();
@@ -112,20 +135,31 @@ public class HoppersModel {
                 this.currentConfig = testHoppersConfig;
                 this.grid = this.currentConfig.getGrid();
                 this.frog = null;
-                return 3;
+                alertObservers("Jumped from (" + this.savedCol + ", " + this.savedRow + ")  to (" +
+                        col + ", " + row + ")");
             } else {
                 this.frog = null;
-                return 4;
+                alertObservers("Can't jump from (" + this.savedCol + ", " + this.savedRow + ")  to (" +
+                        col + ", " + row + ")");
             }
         }
     }
 
-    public int getSavedRow() {
-        return this.savedRow;
+    public void reset(String filename) throws IOException {
+        load(filename);
+        alertObservers("Puzzle reset!");
     }
 
-    public int getSavedCol() {
-        return this.savedCol;
+    public char[][] getGrid () {
+        return this.grid;
+    };
+
+    public int getRowDIM() {
+        return this.currentConfig.getRowDIM();
+    }
+
+    public int getColumnDIM() {
+        return this.currentConfig.getColumnDIM();
     }
 
     @Override
@@ -135,7 +169,7 @@ public class HoppersModel {
         string.append("   ");
         for (int c= 0; c < (this.currentConfig.getColumnDIM()); c++){
             if (firstTime) {
-                string.append(" " + c);
+                string.append(" ").append(c);
             } else {
                 string.append(c);
                 firstTime = true;
@@ -144,12 +178,10 @@ public class HoppersModel {
         firstTime = false;
         string.append("\n");
         string.append("  ");
-        for (int c = 2; c < (2 + 2 * this.currentConfig.getColumnDIM()); c++){
-            string.append("-");
-        }
+        string.append("-".repeat(Math.max(0, (2 + 2 * this.currentConfig.getColumnDIM()) - 2)));
         string.append("\n");
         for (int c = 0; c < this.currentConfig.getRowDIM(); c++) {
-            string.append(c + "| ");
+            string.append(c).append("| ");
             for (int r = 0; r < this.currentConfig.getColumnDIM(); r++) {
                 if (firstTime) {
                     string.append(" ");
