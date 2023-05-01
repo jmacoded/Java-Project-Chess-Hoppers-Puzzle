@@ -20,40 +20,69 @@ import java.io.IOException;
 import java.nio.file.Paths;
 
 
+/**
+ * The graphical user interface to the Chess solitaire game model
+ *
+ * @author Teju Rajbabu
+ */
 public class ChessGUI extends Application implements Observer<ChessModel, String> {
+    /** View/Controller access to model */
     private ChessModel model;
 
     /** The size of all icons, in square dimension */
     private final static int ICON_SIZE = 75;
     /** the font size for labels and buttons */
     private final static int FONT_SIZE = 12;
-
+    /** Stage for GUI*/
     private Stage stage;
-
+    /** Top label, changes for controller inputs*/
     private Label label;
-
+    /** the name of the file to read from*/
     private String filepath;
+    /** full file path to access file */
     private String file;
+    /**
+     * A cell occupied with a bishop
+     */
     char BISHOP = 'B';
+    /**
+     * A cell occupied with a king
+     */
     char KING = 'K';
+    /**
+     * A cell occupied with a knight
+     */
     char KNIGHT = 'N';
+    /**
+     * A cell occupied with a pawn
+     */
     char PAWN = 'P';
+    /**
+     * A cell occupied with a queen
+     */
     char QUEEN = 'Q';
+    /**
+     * A cell occupied with a rook
+     */
     char ROOK = 'R';
 
     /** The resources directory is located directly underneath the gui package */
     private final static String RESOURCES_DIR = "resources/";
-
-    // for demonstration purposes
+    /** Image of Bishop */
     private Image bishop = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"bishop.png"));
-
+    /** Image of Knight */
     private Image knight = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"knight.png"));
+    /** Image of King */
     private Image king = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"king.png"));
+    /** Image of Pawn */
     private Image pawn = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"pawn.png"));
+    /** Image of Queen */
     private Image queen = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"queen.png"));
+    /** Image of Rook */
     private Image rook = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"rook.png"));
-
+    /** Chess board with pieces*/
     private GridPane board;
+    /** Border pane of GUI to hold label, chess board, and interactive buttons */
     private BorderPane borderPane;
 
     /** a definition of light and dark and for the button backgrounds */
@@ -104,6 +133,11 @@ public class ChessGUI extends Application implements Observer<ChessModel, String
         stage.show();
     }
 
+    /**
+     * A helper method the builds the chess board to return
+     *
+     * @return the chess board
+     */
     private GridPane board(){
         char[][] grid = model.getGrid();
         board = new GridPane();
@@ -148,6 +182,13 @@ public class ChessGUI extends Application implements Observer<ChessModel, String
         }
         return board;
     }
+
+    /**
+     * A helper method that builds the three buttons, Load, Reset, and Hint
+     * with functionality into a HBOX
+     *
+     * @return Load, Reset, and Hint buttons in a HBox
+     */
     private HBox buttons(){
         HBox hbox = new HBox();
         Button Load = new Button("Load");
@@ -160,14 +201,28 @@ public class ChessGUI extends Application implements Observer<ChessModel, String
         return hbox;
     }
 
+    /**
+     * A helper method to reset the model any time the reset
+     * button is pressed.
+     */
     public void reseter(){
         try {
             this.model.reset(filepath);
         }catch (IOException e){}
     }
+
+    /**
+     * A helper method to call solving for the model to get
+     * the next step in the puzzle
+     */
     public void hinter(){
         this.model.solving();
     }
+
+    /**
+     * A helper method to load a new file and change the board to that
+     * new file
+     */
     public void loader(){
         FileChooser chooser = new FileChooser();
         String currentPath = Paths.get(".").toAbsolutePath().normalize().toString();
@@ -179,6 +234,16 @@ public class ChessGUI extends Application implements Observer<ChessModel, String
             this.model.load(file);
         } catch (IOException e){}
     }
+
+    /**
+     * A helper method to cut down text, Makes the button have either
+     * a light or a dark background depending on the row + col combination
+     * Sets action to call model's waiting room to select buttons.
+     * Buttons are the right size.
+     * @param button Chess square with or without piece
+     * @param row row on Chess board
+     * @param col column on Chess board
+     */
     private void setButton(Button button,int row, int col) {
         if ((row + col) % 2 == 0) {
             button.setBackground(LIGHT);
@@ -199,6 +264,11 @@ public class ChessGUI extends Application implements Observer<ChessModel, String
         label.setText(msg);
     }
 
+    /**
+     * Starts up the GUI interface
+     *
+     * @param args the filename to launch the application
+     */
     public static void main(String[] args) {
         Application.launch(args);
     }

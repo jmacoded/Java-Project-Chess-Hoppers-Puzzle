@@ -7,6 +7,11 @@ import puzzles.common.solver.Solver;
 
 import java.io.IOException;
 
+/**
+ * The main program for the chess puzzle
+ *
+ * @author Teju Rajbabu
+ */
 public class Chess {
     public static void main(String[] args) {
         if (args.length != 1) {

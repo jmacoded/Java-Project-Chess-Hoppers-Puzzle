@@ -12,11 +12,19 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-// TODO: implement your ChessConfig for the common solver
+/**
+ * The Chess configuration object for the chess puzzle. Implements Configuration
+ *
+ * @author Teju Rajbabu
+ */
 
 public class ChessConfig implements Configuration {
+    /** number of columns in grid */
     private static int columnDIM;
+    /** number of rows in grid */
     private static int rowDIM;
+    /** grid of characters, represents chess board */
+
     private char[][] grid;
 
     /**
@@ -25,19 +33,40 @@ public class ChessConfig implements Configuration {
     char EMPTY = '.';
 
     /**
-     * A cell occupied with a bishop
+     * A list of pieces of a chess board
      */
-
     private static final Character[] pieces =
             {'B', 'K', 'N', 'P', 'Q', 'R'};
+    /**
+     * A cell occupied with a bishop
+     */
     char BISHOP = 'B';
+    /**
+     * A cell occupied with a king
+     */
     char KING = 'K';
+    /**
+     * A cell occupied with a knight
+     */
     char KNIGHT = 'N';
+    /**
+     * A cell occupied with a pawn
+     */
     char PAWN = 'P';
+    /**
+     * A cell occupied with a queen
+     */
     char QUEEN = 'Q';
+    /**
+     * A cell occupied with a rook
+     */
     char ROOK = 'R';
 
-
+    /**
+     * Creates a configuration of Chess to represent the chess puzzle
+     * @param filename the name of the file to read from
+     * @throws IOException if the file is not found or there are errors reading
+     */
     public ChessConfig(String filename) throws IOException {
         try (BufferedReader in = new BufferedReader(new FileReader(filename))) {
             String line = in.readLine();
@@ -62,6 +91,11 @@ public class ChessConfig implements Configuration {
 
     }
 
+    /**
+     * Copy constructor.  Takes a config, other, and makes a full "deep" copy
+     * of its instance data.
+     * @param other the config to copy
+     */
     private ChessConfig(ChessConfig other) {
         this.grid = new char[rowDIM][columnDIM];
         for (int r = 0; r < rowDIM; r++) {
@@ -83,6 +117,12 @@ public class ChessConfig implements Configuration {
         return counter == 1;
     }
 
+    /**
+     * Gets the piece/empty from the grid given a row and column
+     * @param row row of the board
+     * @param col column of the board
+     * @return character piece or empty
+     */
     public char getCell(int row, int col) {
         return grid[row][col];
     }
@@ -226,6 +266,16 @@ public class ChessConfig implements Configuration {
     }
 
 
+    /**
+     * Straight line up movement for Queen and Rook
+     * Directly moves the piece on the board
+     * and returns a new configuration for the moved state
+     *
+     * @param r row position of the piece
+     * @param c column position of the piece
+     * @param piece the piece being moved
+     * @return Configuration of moved board
+     */
     public ChessConfig VerticalUp(int r, int c, char piece) {
         int moveRow = r;
         while (moveRow - 1 >= 0) {
@@ -241,6 +291,16 @@ public class ChessConfig implements Configuration {
         return null;
     }
 
+    /**
+     * Straight line down movement for Queen and Rook
+     * Directly moves the piece on the board
+     * and returns a new configuration for the moved state
+     *
+     * @param r row position of the piece
+     * @param c column position of the piece
+     * @param piece the piece being moved
+     * @return Configuration of moved board
+     */
     public ChessConfig VerticalDown(int r, int c, char piece) {
         int moveRow = r;
         while (moveRow + 1 < rowDIM) {
@@ -256,6 +316,16 @@ public class ChessConfig implements Configuration {
         return null;
     }
 
+    /**
+     * Straight line left movement for Queen and Rook
+     * Directly moves the piece on the board
+     * and returns a new configuration for the moved state
+     *
+     * @param r row position of the piece
+     * @param c column position of the piece
+     * @param piece the piece being moved
+     * @return Configuration of moved board
+     */
     public ChessConfig HorizontalLeft(int r, int c, char piece) {
         int moveCol = c;
         while (moveCol - 1 >= 0) {
@@ -271,6 +341,16 @@ public class ChessConfig implements Configuration {
         return null;
     }
 
+    /**
+     * Straight line right movement for Queen and Rook
+     * Directly moves the piece on the board
+     * and returns a new configuration for the moved state
+     *
+     * @param r row position of the piece
+     * @param c column position of the piece
+     * @param piece the piece being moved
+     * @return Configuration of moved board
+     */
     public ChessConfig HorizontalRight(int r, int c, char piece) {
         int moveCol = c;
         while (moveCol + 1 < columnDIM) {
@@ -286,6 +366,16 @@ public class ChessConfig implements Configuration {
         return null;
     }
 
+    /**
+     * Straight north-east movement for Queen and Bishop
+     * Directly moves the piece on the board
+     * and returns a new configuration for the moved state
+     *
+     * @param r row position of the piece
+     * @param c column position of the piece
+     * @param piece the piece being moved
+     * @return Configuration of moved board
+     */
     public ChessConfig NE(int r, int c, char piece) {
         int moveRow = r;
         int moveCol = c;
@@ -303,6 +393,16 @@ public class ChessConfig implements Configuration {
         return null;
     }
 
+    /**
+     * Straight north-west movement for Queen and Bishop
+     * Directly moves the piece on the board
+     * and returns a new configuration for the moved state
+     *
+     * @param r row position of the piece
+     * @param c column position of the piece
+     * @param piece the piece being moved
+     * @return Configuration of moved board
+     */
     public ChessConfig NW(int r, int c, char piece) {
         int moveRow = r;
         int moveCol = c;
@@ -320,6 +420,16 @@ public class ChessConfig implements Configuration {
         return null;
     }
 
+    /**
+     * Straight south-east movement for Queen and Bishop
+     * Directly moves the piece on the board
+     * and returns a new configuration for the moved state
+     *
+     * @param r row position of the piece
+     * @param c column position of the piece
+     * @param piece the piece being moved
+     * @return Configuration of moved board
+     */
     public ChessConfig SE(int r, int c, char piece) {
         int moveRow = r;
         int moveCol = c;
@@ -337,6 +447,16 @@ public class ChessConfig implements Configuration {
         return null;
     }
 
+    /**
+     * Straight south-west movement for Queen and Bishop
+     * Directly moves the piece on the board
+     * and returns a new configuration for the moved state
+     *
+     * @param r row position of the piece
+     * @param c column position of the piece
+     * @param piece the piece being moved
+     * @return Configuration of moved board
+     */
     public ChessConfig SW(int r, int c, char piece) {
         int moveRow = r;
         int moveCol = c;
@@ -355,6 +475,16 @@ public class ChessConfig implements Configuration {
         return null;
     }
 
+    /**
+     * All possible movements of a horse piece returned into a list for checking
+     * Directly moves the piece on the board
+     * and returns new configuration/s for the moved state
+     *
+     * @param r row position of the piece
+     * @param c column position of the piece
+     * @param piece the piece being moved
+     * @return list of Configurations of moved board
+     */
     public LinkedList<ChessConfig> Horsie(int r, int c, char piece) {
         LinkedList<ChessConfig> HorsieList = new LinkedList<>();
         if (r - 1 >= 0 & c - 2 >= 0) {
@@ -432,6 +562,16 @@ public class ChessConfig implements Configuration {
         return HorsieList;
     }
 
+    /**
+     * One square step north-west for Pawn and King
+     * Directly moves the piece on the board
+     * and returns a new configuration for the moved state
+     *
+     * @param r row position of the piece
+     * @param c column position of the piece
+     * @param piece the piece being moved
+     * @return Configuration of moved board
+     */
     public ChessConfig NW1(int r, int c, Character piece) {
         if (r - 1 >= 0 & c - 1 >= 0) {
             Character cell = getCell(r - 1, c - 1);
@@ -445,6 +585,16 @@ public class ChessConfig implements Configuration {
         return null;
     }
 
+    /**
+     * One square step north-east for Pawn and King
+     * Directly moves the piece on the board
+     * and returns a new configuration for the moved state
+     *
+     * @param r row position of the piece
+     * @param c column position of the piece
+     * @param piece the piece being moved
+     * @return Configuration of moved board
+     */
     public ChessConfig NE1(int r, int c, Character piece) {
         if (r - 1 >= 0 & c + 1 < columnDIM) {
             Character cell = getCell(r - 1, c + 1);
@@ -457,6 +607,17 @@ public class ChessConfig implements Configuration {
         }
         return null;
     }
+
+    /**
+     * One square step south-west for King
+     * Directly moves the piece on the board
+     * and returns a new configuration for the moved state
+     *
+     * @param r row position of the piece
+     * @param c column position of the piece
+     * @param piece the piece being moved
+     * @return Configuration of moved board
+     */
     public ChessConfig SW1(int r, int c, Character piece) {
         if (r + 1 < rowDIM & c - 1 >= 0) {
             Character cell = getCell(r + 1, c - 1);
@@ -469,6 +630,17 @@ public class ChessConfig implements Configuration {
         }
         return null;
     }
+
+    /**
+     * One square step south-east for King
+     * Directly moves the piece on the board
+     * and returns a new configuration for the moved state
+     *
+     * @param r row position of the piece
+     * @param c column position of the piece
+     * @param piece the piece being moved
+     * @return Configuration of moved board
+     */
 
     public ChessConfig SE1(int r, int c, Character piece) {
         if (r + 1 < rowDIM & c + 1 < columnDIM) {
@@ -483,6 +655,17 @@ public class ChessConfig implements Configuration {
         return null;
     }
 
+
+    /**
+     * One square step north for King
+     * Directly moves the piece on the board
+     * and returns a new configuration for the moved state
+     *
+     * @param r row position of the piece
+     * @param c column position of the piece
+     * @param piece the piece being moved
+     * @return Configuration of moved board
+     */
     public ChessConfig N1(int r, int c, Character piece) {
         if (r - 1 >= 0) {
             Character cell = getCell(r - 1, c);
@@ -495,6 +678,17 @@ public class ChessConfig implements Configuration {
         }
         return null;
     }
+
+    /**
+     * One square step south for King
+     * Directly moves the piece on the board
+     * and returns a new configuration for the moved state
+     *
+     * @param r row position of the piece
+     * @param c column position of the piece
+     * @param piece the piece being moved
+     * @return Configuration of moved board
+     */
     public ChessConfig S1(int r, int c, Character piece) {
         if (r + 1 < rowDIM) {
             Character cell = getCell(r + 1, c);
@@ -508,6 +702,16 @@ public class ChessConfig implements Configuration {
         return null;
     }
 
+    /**
+     * One square step west for King
+     * Directly moves the piece on the board
+     * and returns a new configuration for the moved state
+     *
+     * @param r row position of the piece
+     * @param c column position of the piece
+     * @param piece the piece being moved
+     * @return Configuration of moved board
+     */
     public ChessConfig W1(int r, int c, Character piece) {
         if (c - 1 >= 0) {
             Character cell = getCell(r, c - 1);
@@ -520,6 +724,17 @@ public class ChessConfig implements Configuration {
         }
         return null;
     }
+
+    /**
+     * One square step east for King
+     * Directly moves the piece on the board
+     * and returns a new configuration for the moved state
+     *
+     * @param r row position of the piece
+     * @param c column position of the piece
+     * @param piece the piece being moved
+     * @return Configuration of moved board
+     */
     public ChessConfig E1(int r, int c, Character piece) {
         if (c + 1 < columnDIM) {
             Character cell = getCell(r, c + 1);
@@ -534,7 +749,11 @@ public class ChessConfig implements Configuration {
     }
 
 
-
+    /**
+     * Checks if the given cell is a valid chess piece
+     * @param cell square space on the board
+     * @return whether it is a chess piece or nnot
+     */
     public boolean cellCheck(Character cell) {
         return (cell.equals(BISHOP) || cell.equals(KING) || cell.equals(KNIGHT) ||
                 cell.equals(PAWN) || cell.equals(QUEEN) || cell.equals(ROOK));
@@ -552,9 +771,18 @@ public class ChessConfig implements Configuration {
         }
         return string.toString();
     }
+
+    /**
+     * gives a hashcode for the grid
+     * @return integer hashcode
+     */
     public int hashCode() {
         return Arrays.deepHashCode(grid);
     }
+    /**
+     * Checks if two grids are the same
+     * @return if two grids are equal
+     */
     public boolean equals(Object other) {
         if (other instanceof Configuration) {
             ChessConfig otherconfig = (ChessConfig) other;
@@ -567,13 +795,26 @@ public class ChessConfig implements Configuration {
         return false;
     }
 
+    /**
+     * Gets the config grid or chess board
+     * @return the chess board
+     */
     public char[][] getGrid(){
         return this.grid;
     }
+
+    /**
+     * Gets the number of rows on the board
+     * @return the chess board
+     */
     public int getRowDIM(){
         return rowDIM;
     }
 
+    /**
+     * Gets the number of columns on the board
+     * @return the chess board
+     */
     public int getColumnDIM() {
         return columnDIM;
     }
