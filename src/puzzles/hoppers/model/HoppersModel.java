@@ -11,15 +11,23 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * A hoppers-related class that provides the fountains for general UI to work
+ *
+ * @author Jamie Antal
+ */
 public class HoppersModel {
-    /** the collection of observers of this model */
+    /** A collection of observers representing the observers of this model */
     private final List<Observer<HoppersModel, String>> observers = new LinkedList<>();
-
-    /** the current configuration */
+    /** A HopperConfig representing the current configuration */
     private HoppersConfig currentConfig;
+    /** A Character representing a current picked-up frog in game */
     private Character frog;
+    /** A char[][] representing the current status of board in game */
     private char[][] grid;
+    /** A Int representing the first row input by the user */
     private int savedRow;
+    /** A Int representing the first column input by the user */
     private int savedCol;
 
     /**
@@ -41,6 +49,11 @@ public class HoppersModel {
         }
     }
 
+    /**
+     * Creates a New HoppersModel with given filename
+     * @param filename Must be String, represents a file to extract information from
+     * @throws IOException
+     */
     public HoppersModel(String filename) throws IOException {
         this.currentConfig = new HoppersConfig(filename);
         this.grid = currentConfig.getGrid();
@@ -49,6 +62,11 @@ public class HoppersModel {
         this.savedCol = -1;
     }
 
+    /**
+     * When called, it will create new Solver and looks for next step in solving the current puzzle. If found, it will
+     * set the current Config to that and call alertObservers() with message. If it can't find any steps to solve the
+     * puzzle, it will call alertObservers() with message
+     */
     public void hint() {
         Solver solver = new Solver(this.currentConfig);
         ArrayList<Configuration> solverShortestList = solver.getShortestlist();
@@ -65,6 +83,13 @@ public class HoppersModel {
         }
     }
 
+    /**
+     * When called, it will attempt to extract information from given filename and creates a new HopperConfig with
+     * filename. If successful, it will set current Config to new HopperConfig and call alertObservers() with message.
+     * If not successful, it will throw a IOException
+     * @param filename Must be String, represents a file to extract from
+     * @throws IOException
+     */
     public void load(String filename) throws IOException {
         this.currentConfig = new HoppersConfig(filename);
         this.grid = this.currentConfig.getGrid();
@@ -72,16 +97,35 @@ public class HoppersModel {
         alertObservers("Loaded: " + file[2]);
     }
 
+    /**
+     * Same in every part as load(String filename), but only requires a file as parameter
+     * @param file Must be File, represents a file to extract from
+     * @throws IOException
+     */
     public void load(File file) throws IOException {
         this.currentConfig = new HoppersConfig(file.getPath());
         this.grid = this.currentConfig.getGrid();
         alertObservers("Loaded: " + file.getName());
     }
 
+    /**
+     * When called, it will alert the observers with a message. Basically, its for when load() functions fails to load
+     * a file
+     * @param filename Must be String, represents a file's name
+     */
     public void fail(String filename) {
         alertObservers("Failed to load: " + filename);
     }
 
+    /**
+     * When called for first time, it will take in row and column and see if there's frog present in the coordinates
+     * on the board. If not, it will throw away the inputs. If there is a frog, it will save the coordinates.
+     * When called for second time with saved row and column, it will take in row and column, and checks the given
+     * information to see if it is valid or not. Finally, it will proceed to make a test config and compare it to
+     * current Config's neighbors to see if the move is valid or not
+     * @param row Must be Int, represents where to go at X axis of board in game
+     * @param col Must be Int, represents where to go at Y axis of board in game
+     */
     public void select(int row, int col) {
         if (this.frog == null) {
             if (this.grid[row][col] == 'G' || this.grid[row][col] == 'R') {
@@ -145,19 +189,36 @@ public class HoppersModel {
         }
     }
 
+    /**
+     * When called, it will call the load() function to "reset" the game back to last used filename
+     * @param filename Must be String, represents a file to extract information from
+     * @throws IOException
+     */
     public void reset(String filename) throws IOException {
         load(filename);
         alertObservers("Puzzle reset!");
     }
 
+    /**
+     * Gets and returns the grid of the game
+     * @return A char[][] representing the current status of board in game
+     */
     public char[][] getGrid () {
         return this.grid;
     };
 
+    /**
+     * Gets and returns the romDIM of the game
+     * @return A Int representing the range of rows in game
+     */
     public int getRowDIM() {
         return this.currentConfig.getRowDIM();
     }
 
+    /**
+     * Gets and returns the columnDIM of the game
+     * @return A Int representing the range of columns in game
+     */
     public int getColumnDIM() {
         return this.currentConfig.getColumnDIM();
     }

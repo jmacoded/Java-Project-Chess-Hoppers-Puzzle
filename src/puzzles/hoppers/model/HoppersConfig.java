@@ -8,13 +8,26 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 
-// TODO: implement your HoppersConfig for the common solver
-
+/**
+ * A hoppers-related class that represents the actual status of the game. Whereabouts of red frog and green frogs,
+ * lily-pads, etc. It also contains functions that provides fountains for Solver to receive and attempt to solve with
+ * the information
+ *
+ * @author Jamie Antal
+ */
 public class HoppersConfig implements Configuration{
+    /** An Int representing the range of columns in the game */
     private static Integer columnDIM;
+    /** An Int representing the range of rows in the game */
     private static Integer rowDIM;
+    /** An Char[][] representing the board and whereabouts of frogs in the game */
     private char[][] grid;
 
+    /**
+     * When called, it will attempt to create a new game and board with given filename
+     * @param filename Must be String, represents a file to extract information from
+     * @throws IOException
+     */
     public HoppersConfig(String filename) throws IOException {
         try (BufferedReader in = new BufferedReader(new FileReader(filename))) {
             String[] line = in.readLine().split("\\s+");
@@ -35,6 +48,10 @@ public class HoppersConfig implements Configuration{
         }
     }
 
+    /**
+     * Simliar to public version, but this protected version is created to copy other HoppersConfig
+     * @param copy Must be HoppersConfig, represents a HoppersConfig to copy from
+     */
     protected HoppersConfig(HoppersConfig copy) {
         this.grid = new char[rowDIM][columnDIM];
         for (int r = 0; r < rowDIM; r++) {
@@ -42,6 +59,14 @@ public class HoppersConfig implements Configuration{
         }
     }
 
+    /**
+     * Will check the frog at given coordinates of the board to see if it can jump in vertical way. If true, it will
+     * create new HopperConfigs and add them to collection and return the collection at the end of function
+     * @param frog Must be Char, represents either green frog or red frog
+     * @param row Must be Int, represents the where to go to on X axis of the board
+     * @param column Must be Int, represents the where to go to on Y axis of the board
+     * @return A collection of configurations representing possible steps to solve the puzzle!
+     */
     private Collection<Configuration> isVerticalValid(Character frog, int row, int column) {
         LinkedList<Configuration> verticalNeighbors = new LinkedList<>();
         if (column + 4 < columnDIM && this.grid[row][column + 2] == 'G' && this.grid[row][column + 4] == '.') {
@@ -61,6 +86,14 @@ public class HoppersConfig implements Configuration{
         return verticalNeighbors;
     }
 
+    /**
+     * Will check the frog at given coordinates of the board to see if it can jump in horizontal way. If true, it will
+     * create new HopperConfigs and add them to collection and return the collection at the end of function
+     * @param frog Must be Char, represents either green frog or red frog
+     * @param row Must be Int, represents the where to go to on X axis of the board
+     * @param column Must be Int, represents the where to go to on Y axis of the board
+     * @return A collection of configurations representing possible steps to solve the puzzle!
+     */
     private Collection<Configuration> isHorizontalValid(Character frog, int row, int column) {
         LinkedList<Configuration> horizontalNeighbors = new LinkedList<>();
         if (row + 4 < rowDIM && this.grid[row + 2][column] == 'G' && this.grid[row + 4][column] == '.') {
@@ -80,6 +113,15 @@ public class HoppersConfig implements Configuration{
         return horizontalNeighbors;
     }
 
+    /**
+     * Will check the frog at given coordinates of the board to see if it can jump in NORTHWEST/SOUTHEAST diagonal way.
+     * If true,it will create new HopperConfigs and add them to collection and return the collection at the end of
+     * function
+     * @param frog Must be Char, represents either green frog or red frog
+     * @param row Must be Int, represents the where to go to on X axis of the board
+     * @param column Must be Int, represents the where to go to on Y axis of the board
+     * @return A collection of configurations representing possible steps to solve the puzzle!
+     */
     private Collection<Configuration> isNorthWestDiagonalValid(Character frog, int row, int column) {
         LinkedList<Configuration> northWestDiagonalNeighbors = new LinkedList<>();
         if (row + 2 < rowDIM && column + 2 < columnDIM && this.grid[row + 1][column + 1] == 'G' &&
@@ -101,6 +143,15 @@ public class HoppersConfig implements Configuration{
         return northWestDiagonalNeighbors;
     }
 
+    /**
+     * Will check the frog at given coordinates of the board to see if it can jump in NORTHEAST/SOUTHWEST diagonal way.
+     * If true,it will create new HopperConfigs and add them to collection and return the collection at the end of
+     * function
+     * @param frog Must be Char, represents either green frog or red frog
+     * @param row Must be Int, represents the where to go to on X axis of the board
+     * @param column Must be Int, represents the where to go to on Y axis of the board
+     * @return A collection of configurations representing possible steps to solve the puzzle!
+     */
     private Collection<Configuration> isNorthEastDiagonalValid(Character frog, int row, int column) {
         LinkedList<Configuration> northEastDiagonalNeighbors = new LinkedList<>();
         if (row + 2 < rowDIM && column - 2 > -1 && this.grid[row + 1][column - 1] == 'G' &&
@@ -122,14 +173,26 @@ public class HoppersConfig implements Configuration{
         return northEastDiagonalNeighbors;
     }
 
+    /**
+     * Gets the grid of HopperConfig and returns it
+     * @return A Char[][] representing the current status of the board in game
+     */
     public char[][] getGrid() {
         return this.grid;
     }
 
+    /**
+     * Gets the romDIM of HopperConfig and returns it
+     * @return A Int representing the range of rows in game
+     */
     public int getRowDIM(){
         return rowDIM;
     }
 
+    /**
+     * Gets the columnDIM of HopperConfig and returns it
+     * @return A Int representing the range of columns in game
+     */
     public int getColumnDIM() {
         return columnDIM;
     }
@@ -182,10 +245,12 @@ public class HoppersConfig implements Configuration{
         return string.toString();
     }
 
+    @Override
     public int hashCode() {
         return Arrays.deepHashCode(grid);
     }
 
+    @Override
     public boolean equals(Object other) {
         if (other instanceof Configuration) {
             HoppersConfig otherconfig = (HoppersConfig) other;

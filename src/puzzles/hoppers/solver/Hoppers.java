@@ -7,6 +7,12 @@ import puzzles.hoppers.model.HoppersConfig;
 import java.io.IOException;
 import java.util.ArrayList;
 
+/**
+ * A hoppers-related class where it will attempt to calculate a solution to a given puzzle if possible in the shortest
+ * steps, then print out every step taken to solve the puzzle
+ *
+ * @author Jamie Antal
+ */
 public class Hoppers {
     public static void main(String[] args) {
         if (args.length != 1) {

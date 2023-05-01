@@ -20,8 +20,15 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 
+/**
+ * A hoppers-related class with functions that build the GUI version of Hoppers game
+ *
+ * @author Jamie Antal
+ */
 public class HoppersGUI extends Application implements Observer<HoppersModel, String> {
+    /** Represents the model */
     private HoppersModel model;
+    /** Represents the saved file */
     private String savedFilePath;
     /** The size of all icons, in square dimension */
     private final static int ICON_SIZE = 75;
@@ -32,15 +39,27 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
     private final static String RESOURCES_DIR = "resources/";
 
     // for demonstration purposes
+    /** Represents the image of green frog */
     private Image greenFrog = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"green_frog.png"));
+    /** Represents the image of lily pad */
     private Image lilyPad = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"lily_pad.png"));
+    /** Represents the image of red frog */
     private Image redFrog = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"red_frog.png"));
+    /** Represents the image of water */
     private Image water = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"water.png"));
+    /** Represents the stage of GUI */
     private Stage stage;
+    /** Represents the borderPane of stage */
     private BorderPane borderPane;
+    /** Represents the label in borderPane */
     private Label label;
+    /** Represents the board of the game */
     private GridPane hoppersBoard;
 
+    /**
+     * Before starting up the GUI, it will attempt to create new model with given file and add the GUI to model's
+     * observers. It also saves the file
+     */
     public void init() {
         String filename = getParameters().getRaw().get(0);
         this.savedFilePath = filename;
@@ -78,6 +97,10 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
         stage.show();
     }
 
+    /**
+     * When called, it will create a new gridPane with information from model's grid to represent the current status of
+     * board in the game. It will be saved into this.hoppersBoard
+     */
     private void hoppersBoard() {
         this.hoppersBoard = new GridPane();
         char[][] grid = this.model.getGrid();
@@ -111,6 +134,13 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
         }
     }
 
+    /**
+     * When called, it will create HBox with buttons to represent the load, reset, and hint buttons in GUI. When
+     * clicked, every button will call model's function according to its name (Ex: hitting hint button will advance
+     * the puzzle one step towards to the solution if possible)
+     * Note to keep in mind, when load button is clicked, it will bring up a directory to pick options to load from
+     * @return A HBox with fully implemented buttons
+     */
     private HBox buttons(){
         HBox hbox = new HBox();
         Button load = new Button("Load");
